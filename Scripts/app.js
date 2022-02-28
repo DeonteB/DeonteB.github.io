@@ -53,6 +53,7 @@
     {
         $("header").html(html_data);
         $(`li>a:contains(${document.title})`).addClass("active"); // update active link
+        
         CheckLogin();
     }
 
@@ -197,11 +198,7 @@
 
             contactList.innerHTML = data;
 
-            $("#addButton").on("click", ()=>
-            {
-                location.href = "edit.html#add";
-            });
-
+           
             $("button.delete").on("click", function()
             {
                 if(confirm("Are you sure?"))
@@ -216,6 +213,12 @@
                 location.href = "edit.html#" + $(this).val();
             });
         }
+
+        $("#addButton").on("click", ()=>
+        {
+            location.href = "edit.html#add";
+        });
+
     }
 
     /**
@@ -315,6 +318,7 @@
                  //if username and passsword mathches succes -> perfrom the login sequaence
             if(success)
             {
+                
                 sessionStorage.setItem("user", newUser.serialize());
 
                 //hide any error message
@@ -322,6 +326,9 @@
 
                 // redireact the user to the secure area of the site - contact-list.html
                 location.href = "contact-list.html";
+
+               
+
             }
             else
             {
@@ -350,15 +357,26 @@
 
     function CheckLogin()
     {
-        // if th euser is login then 
+        
+       //let data = "users";
+
+        // if the user is login then 
         if(sessionStorage.getItem("user"))
         {
+           // let newUser= new core.User();
+            let data = "user";
             //swap out the login link for 
             $("#login").html(
                 `<a id="logout" class="nav-link" href="#"><i class="fas fa-sign-out-alt"></i> Log out</a>`
 
             );
-
+            //let data = "users";
+            console.log(data.newUser)
+           // $("#nav").html("DisplayName");
+           document.querySelector("#nav").innerText = data.Username;
+           console.log(this.Username)
+          // document.querySelector("#nav").innerHTML(data.Username);
+               
             $("#logout").on("click", function()
             {
             //perform logout
@@ -371,10 +389,125 @@
 
     
 
-    function displayRegisterPage()
+    function ValidatePage(fieldID, regular_expression, error_message)
     {
-        console.log("Register Page");
+
+        let ErrorMessage = $("#ErrorMessage").hide();
+        let password = $("#password").val();
+        let confirmpassword = $("#confirmPassword").val();
+       
+        $("#" + fieldID).on("blur", function()
+        {
+            let text_value = $(this).val();
+  
+            if(!regular_expression.test(text_value))
+            {
+                $(this).trigger("focus").trigger("select");
+                ErrorMessage.addClass("alert alert-danger").text(error_message).show();
+            }
+           
+            else
+            {
+                ErrorMessage.removeAttr("class").hide();
+            }
+        });
+
+       /*   $("#" + fieldID).on("blur", function()
+        {
+        //Was going to be for password matching couldn't get it to work fully   
+       /*  if(password == confirmpassword)
+        {
+            ErrorMessage.removeAttr("class").hide();
+        } 
+        else
+        {
+            
+            $(this).trigger("focus").trigger("select");
+            ErrorMessage.addClass("alert alert-danger").text(error_message).show();
+        } 
+
+        
+        });   */
+    } 
+
+    //This function is for validating the user for the register page
+        function RegisterPageValidation()
+    {
+        ValidatePage("FirstName", /([A-Z][a-z]{1,})$/, "Please enter a valid First Name. This must include at least a Capitalized First Letter and a two character name.");
+        ValidatePage("lastName",  /([A-Z][a-z]{1,})$/, "Please enter a valid Last Name. This must include at least a Capitalized First Letter and a two character name.");
+        ValidatePage("password", /[a-zA-Z0-9._-]{6,}$/, "Please enter a valid Password must be over 6 character");
+        ValidatePage("confirmPassword", /[a-zA-Z0-9._-]{6,}$/, "Confirm Password should match Password");
+        ValidatePage("emailAddress", /[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,8}/g, "Please enter a valid Email Address.");
     }
+
+     function displayRegisterPage()
+    {
+        //Displays a error message 
+        $("main").append(`<div id="ErrorMessage"> </div>`);
+        console.log("Register Page");
+        
+        RegisterPageValidation();
+       
+       
+
+        submitButton.addEventListener("click", function(event)
+        {
+
+            event.preventDefault();
+            document.forms[0].reset();
+           
+            
+               
+                $("#submitButton").on("click", (event) =>
+                {
+                   
+                
+                   //Clears the form
+                    
+
+                   
+
+                   /* First way of trying to send informatian to console log.
+                        let user = newUser(fullName, contactNumber, emailAddress);
+                    if(user.serialize())
+                    {
+                        console.log(user)
+                    } */
+  
+                    // get changes from the page
+                   // let user = new core.displayName;
+                
+                   // user.deserialize(console.getItem(page));
+
+                    // display the contact in the edit form
+
+                    //Seond way of trying to do send infomation to console log.
+                   /*  $("#FirstName").val(FirstName);
+                    $("#lastName").val(lastName);
+                    $("#emailAddress").val(EmailAddress);
+
+
+                    $("#submitButton").on("click", (event) =>
+                    {
+                        event.preventDefault();
+                        
+                        // get changes from the page
+                        FirstName = $("#FirstName").val();
+                        lastName = $("#lastName").val();
+                        EmailAddress = $("#emailAddress").val();
+
+                        // replace the item in local storage
+                       // console.setItem(page, user.serialize());
+                        // go back to the contact list page (refresh)
+                        console.log(FirstName,lastName,  EmailAddress)
+                    }); */
+                    
+              
+                });
+                
+          
+        }); 
+    } 
 
     // named function option
     function Start()
@@ -419,3 +552,4 @@
     window.addEventListener("load", Start);
 
 })();
+
